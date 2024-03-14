@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getComponentName from 'shared/getComponentName';
-import invariant from 'shared/invariant';
-import {REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
+import getComponentName from "shared/getComponentName";
+import invariant from "shared/invariant";
+import { REACT_ELEMENT_TYPE } from "shared/ReactSymbols";
 
-import ReactCurrentOwner from './ReactCurrentOwner';
+import ReactCurrentOwner from "./ReactCurrentOwner";
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -30,8 +30,8 @@ if (__DEV__) {
 
 function hasValidRef(config) {
   if (__DEV__) {
-    if (hasOwnProperty.call(config, 'ref')) {
-      const getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
+    if (hasOwnProperty.call(config, "ref")) {
+      const getter = Object.getOwnPropertyDescriptor(config, "ref").get;
       if (getter && getter.isReactWarning) {
         return false;
       }
@@ -42,8 +42,8 @@ function hasValidRef(config) {
 
 function hasValidKey(config) {
   if (__DEV__) {
-    if (hasOwnProperty.call(config, 'key')) {
-      const getter = Object.getOwnPropertyDescriptor(config, 'key').get;
+    if (hasOwnProperty.call(config, "key")) {
+      const getter = Object.getOwnPropertyDescriptor(config, "key").get;
       if (getter && getter.isReactWarning) {
         return false;
       }
@@ -53,44 +53,44 @@ function hasValidKey(config) {
 }
 
 function defineKeyPropWarningGetter(props, displayName) {
-  const warnAboutAccessingKey = function() {
+  const warnAboutAccessingKey = function () {
     if (__DEV__) {
       if (!specialPropKeyWarningShown) {
         specialPropKeyWarningShown = true;
         console.error(
-          '%s: `key` is not a prop. Trying to access it will result ' +
-            'in `undefined` being returned. If you need to access the same ' +
-            'value within the child component, you should pass it as a different ' +
-            'prop. (https://fb.me/react-special-props)',
-          displayName,
+          "%s: `key` is not a prop. Trying to access it will result " +
+            "in `undefined` being returned. If you need to access the same " +
+            "value within the child component, you should pass it as a different " +
+            "prop. (https://fb.me/react-special-props)",
+          displayName
         );
       }
     }
   };
   warnAboutAccessingKey.isReactWarning = true;
-  Object.defineProperty(props, 'key', {
+  Object.defineProperty(props, "key", {
     get: warnAboutAccessingKey,
     configurable: true,
   });
 }
 
 function defineRefPropWarningGetter(props, displayName) {
-  const warnAboutAccessingRef = function() {
+  const warnAboutAccessingRef = function () {
     if (__DEV__) {
       if (!specialPropRefWarningShown) {
         specialPropRefWarningShown = true;
         console.error(
-          '%s: `ref` is not a prop. Trying to access it will result ' +
-            'in `undefined` being returned. If you need to access the same ' +
-            'value within the child component, you should pass it as a different ' +
-            'prop. (https://fb.me/react-special-props)',
-          displayName,
+          "%s: `ref` is not a prop. Trying to access it will result " +
+            "in `undefined` being returned. If you need to access the same " +
+            "value within the child component, you should pass it as a different " +
+            "prop. (https://fb.me/react-special-props)",
+          displayName
         );
       }
     }
   };
   warnAboutAccessingRef.isReactWarning = true;
-  Object.defineProperty(props, 'ref', {
+  Object.defineProperty(props, "ref", {
     get: warnAboutAccessingRef,
     configurable: true,
   });
@@ -99,7 +99,7 @@ function defineRefPropWarningGetter(props, displayName) {
 function warnIfStringRefCannotBeAutoConverted(config) {
   if (__DEV__) {
     if (
-      typeof config.ref === 'string' &&
+      typeof config.ref === "string" &&
       ReactCurrentOwner.current &&
       config.__self &&
       ReactCurrentOwner.current.stateNode !== config.__self
@@ -109,13 +109,13 @@ function warnIfStringRefCannotBeAutoConverted(config) {
       if (!didWarnAboutStringRefs[componentName]) {
         console.error(
           'Component "%s" contains the string ref "%s". ' +
-            'Support for string refs will be removed in a future major release. ' +
-            'This case cannot be automatically converted to an arrow function. ' +
-            'We ask you to manually fix this case by using useRef() or createRef() instead. ' +
-            'Learn more about using refs safely here: ' +
-            'https://fb.me/react-strict-mode-string-ref',
+            "Support for string refs will be removed in a future major release. " +
+            "This case cannot be automatically converted to an arrow function. " +
+            "We ask you to manually fix this case by using useRef() or createRef() instead. " +
+            "Learn more about using refs safely here: " +
+            "https://fb.me/react-strict-mode-string-ref",
           componentName,
-          config.ref,
+          config.ref
         );
         didWarnAboutStringRefs[componentName] = true;
       }
@@ -143,7 +143,7 @@ function warnIfStringRefCannotBeAutoConverted(config) {
  * indicating filename, line number, and/or other information.
  * @internal
  */
-const ReactElement = function(type, key, ref, self, source, owner, props) {
+const ReactElement = function (type, key, ref, self, source, owner, props) {
   const element = {
     // This tag allows us to uniquely identify this as a React Element
     $$typeof: REACT_ELEMENT_TYPE,
@@ -169,14 +169,14 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
     // the validation flag non-enumerable (where possible, which should
     // include every environment we run tests in), so the test framework
     // ignores it.
-    Object.defineProperty(element._store, 'validated', {
+    Object.defineProperty(element._store, "validated", {
       configurable: false,
       enumerable: false,
       writable: true,
       value: false,
     });
     // self and source are DEV only properties.
-    Object.defineProperty(element, '_self', {
+    Object.defineProperty(element, "_self", {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -184,7 +184,7 @@ const ReactElement = function(type, key, ref, self, source, owner, props) {
     });
     // Two elements created in two different places should be considered
     // equal for testing purposes and therefore we hide it from enumeration.
-    Object.defineProperty(element, '_source', {
+    Object.defineProperty(element, "_source", {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -221,11 +221,11 @@ export function jsx(type, config, maybeKey) {
   // <div {...props} key="Hi" />, because we aren't currently able to tell if
   // key is explicitly declared to be undefined or not.
   if (maybeKey !== undefined) {
-    key = '' + maybeKey;
+    key = "" + maybeKey;
   }
 
   if (hasValidKey(config)) {
-    key = '' + config.key;
+    key = "" + config.key;
   }
 
   if (hasValidRef(config)) {
@@ -259,7 +259,7 @@ export function jsx(type, config, maybeKey) {
     undefined,
     undefined,
     ReactCurrentOwner.current,
-    props,
+    props
   );
 }
 
@@ -285,11 +285,11 @@ export function jsxDEV(type, config, maybeKey, source, self) {
   // <div {...props} key="Hi" />, because we aren't currently able to tell if
   // key is explicitly declared to be undefined or not.
   if (maybeKey !== undefined) {
-    key = '' + maybeKey;
+    key = "" + maybeKey;
   }
 
   if (hasValidKey(config)) {
-    key = '' + config.key;
+    key = "" + config.key;
   }
 
   if (hasValidRef(config)) {
@@ -319,8 +319,8 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 
   if (key || ref) {
     const displayName =
-      typeof type === 'function'
-        ? type.displayName || type.name || 'Unknown'
+      typeof type === "function"
+        ? type.displayName || type.name || "Unknown"
         : type;
     if (key) {
       defineKeyPropWarningGetter(props, displayName);
@@ -337,13 +337,18 @@ export function jsxDEV(type, config, maybeKey, source, self) {
     self,
     source,
     ReactCurrentOwner.current,
-    props,
+    props
   );
 }
 
 /**
  * Create and return a new ReactElement of the given type.
  * See https://reactjs.org/docs/react-api.html#createelement
+ *
+ * 1. Separate props attributes and special attributes
+ * 2. Mount child elements into props.children
+ * 3. Resolve default props
+ * 4. Created and return ReactElement
  */
 export function createElement(type, config, children) {
   let propName;
@@ -351,6 +356,7 @@ export function createElement(type, config, children) {
   // Reserved names are extracted
   const props = {};
 
+  // Special attributes are extracted
   let key = null;
   let ref = null;
   let self = null;
@@ -365,11 +371,12 @@ export function createElement(type, config, children) {
       }
     }
     if (hasValidKey(config)) {
-      key = '' + config.key;
+      key = "" + config.key;
     }
 
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
+
     // Remaining properties are added to a new props object
     for (propName in config) {
       if (
@@ -408,11 +415,13 @@ export function createElement(type, config, children) {
       }
     }
   }
+
+  // A warning will appear when using props to obtain key or ref in the development environment.
   if (__DEV__) {
     if (key || ref) {
       const displayName =
-        typeof type === 'function'
-          ? type.displayName || type.name || 'Unknown'
+        typeof type === "function"
+          ? type.displayName || type.name || "Unknown"
           : type;
       if (key) {
         defineKeyPropWarningGetter(props, displayName);
@@ -429,7 +438,7 @@ export function createElement(type, config, children) {
     self,
     source,
     ReactCurrentOwner.current,
-    props,
+    props
   );
 }
 
@@ -456,7 +465,7 @@ export function cloneAndReplaceKey(oldElement, newKey) {
     oldElement._self,
     oldElement._source,
     oldElement._owner,
-    oldElement.props,
+    oldElement.props
   );
 
   return newElement;
@@ -469,8 +478,8 @@ export function cloneAndReplaceKey(oldElement, newKey) {
 export function cloneElement(element, config, children) {
   invariant(
     !(element === null || element === undefined),
-    'React.cloneElement(...): The argument must be a React element, but you passed %s.',
-    element,
+    "React.cloneElement(...): The argument must be a React element, but you passed %s.",
+    element
   );
 
   let propName;
@@ -498,7 +507,7 @@ export function cloneElement(element, config, children) {
       owner = ReactCurrentOwner.current;
     }
     if (hasValidKey(config)) {
-      key = '' + config.key;
+      key = "" + config.key;
     }
 
     // Remaining properties override existing props
@@ -546,7 +555,7 @@ export function cloneElement(element, config, children) {
  */
 export function isValidElement(object) {
   return (
-    typeof object === 'object' &&
+    typeof object === "object" &&
     object !== null &&
     object.$$typeof === REACT_ELEMENT_TYPE
   );

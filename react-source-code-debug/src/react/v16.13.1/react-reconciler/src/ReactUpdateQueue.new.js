@@ -151,7 +151,6 @@
 //     Result state: 'ABCDE'
 // ------------------------------------------------------------------------------------------------
 
-
 // Because we process updates in insertion order, and rebase high priority
 // updates when preceding updates are skipped, the final result is deterministic
 // regardless of priority. Intermediate state may vary according to system
@@ -165,28 +164,28 @@
  * 然后在组件更新时，会统一处理队列中的update，后设置的state会覆盖新的state。
  * */
 
-import type {Fiber} from './ReactInternalTypes';
-import type {Lanes, Lane} from './ReactFiberLane';
-import type {SuspenseConfig} from './ReactFiberSuspenseConfig';
+import type { Fiber } from "./ReactInternalTypes";
+import type { Lanes, Lane } from "./ReactFiberLane";
+import type { SuspenseConfig } from "./ReactFiberSuspenseConfig";
 
-import {NoLane, NoLanes, isSubsetOfLanes, mergeLanes} from './ReactFiberLane';
+import { NoLane, NoLanes, isSubsetOfLanes, mergeLanes } from "./ReactFiberLane";
 import {
   enterDisallowedContextReadInDEV,
   exitDisallowedContextReadInDEV,
-} from './ReactFiberNewContext.new';
-import {Callback, ShouldCapture, DidCapture} from './ReactSideEffectTags';
+} from "./ReactFiberNewContext.new";
+import { Callback, ShouldCapture, DidCapture } from "./ReactSideEffectTags";
 
-import {debugRenderPhaseSideEffectsForStrictMode} from 'shared/ReactFeatureFlags';
+import { debugRenderPhaseSideEffectsForStrictMode } from "shared/ReactFeatureFlags";
 
-import {StrictMode} from './ReactTypeOfMode';
+import { StrictMode } from "./ReactTypeOfMode";
 import {
   markRenderEventTimeAndConfig,
   markSkippedUpdateLanes,
-} from './ReactFiberWorkLoop.new';
+} from "./ReactFiberWorkLoop.new";
 
-import invariant from 'shared/invariant';
+import invariant from "shared/invariant";
 
-import {disableLogs, reenableLogs} from 'shared/ConsolePatchingDev';
+import { disableLogs, reenableLogs } from "shared/ConsolePatchingDev";
 
 export type Update<State> = {|
   // TODO: Temporary field. Will remove this by storing a map of
@@ -250,7 +249,7 @@ export function initializeUpdateQueue<State>(fiber: Fiber): void {
 
 export function cloneUpdateQueue<State>(
   current: Fiber,
-  workInProgress: Fiber,
+  workInProgress: Fiber
 ): void {
   // Clone the update queue from current. Unless it's already a clone.
   const queue: UpdateQueue<State> = (workInProgress.updateQueue: any);
@@ -270,7 +269,7 @@ export function cloneUpdateQueue<State>(
 export function createUpdate(
   eventTime: number,
   lane: Lane,
-  suspenseConfig: null | SuspenseConfig,
+  suspenseConfig: null | SuspenseConfig
 ): Update<*> {
   const update: Update<*> = {
     eventTime,
@@ -286,13 +285,20 @@ export function createUpdate(
   return update;
 }
 
+/**
+ * Store the task (Update) in the task queue (updateQueue)
+ * Create a one-way linked list structure to store update, next is used to concatenate update
+ */
 export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
+  // Get updateQueue in rootFiber
   const updateQueue = fiber.updateQueue;
   if (updateQueue === null) {
     // Only occurs if the fiber has been unmounted.
     return;
   }
 
+  // Get the Update task to be executed
+  // Initial rendering has no pending tasks
   const sharedQueue: SharedQueue<State> = (updateQueue: any).shared;
   const pending = sharedQueue.pending;
   if (pending === null) {
@@ -312,10 +318,10 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
       !didWarnUpdateInsideUpdate
     ) {
       console.error(
-        'An update (setState, replaceState, or forceUpdate) was scheduled ' +
-          'from inside an update function. Update functions should be pure, ' +
-          'with zero side-effects. Consider using componentDidUpdate or a ' +
-          'callback.',
+        "An update (setState, replaceState, or forceUpdate) was scheduled " +
+          "from inside an update function. Update functions should be pure, " +
+          "with zero side-effects. Consider using componentDidUpdate or a " +
+          "callback."
       );
       didWarnUpdateInsideUpdate = true;
     }
@@ -324,7 +330,7 @@ export function enqueueUpdate<State>(fiber: Fiber, update: Update<State>) {
 
 export function enqueueCapturedUpdate<State>(
   workInProgress: Fiber,
-  capturedUpdate: Update<State>,
+  capturedUpdate: Update<State>
 ) {
   // Captured updates are updates that are thrown by a child during the render
   // phase. They should be discarded if the render is aborted. Therefore,
@@ -408,12 +414,12 @@ function getStateFromUpdate<State>(
   update: Update<State>,
   prevState: State,
   nextProps: any,
-  instance: any,
+  instance: any
 ): any {
   switch (update.tag) {
     case ReplaceState: {
       const payload = update.payload;
-      if (typeof payload === 'function') {
+      if (typeof payload === "function") {
         // Updater function
         if (__DEV__) {
           enterDisallowedContextReadInDEV();
@@ -446,7 +452,7 @@ function getStateFromUpdate<State>(
     case UpdateState: {
       const payload = update.payload;
       let partialState;
-      if (typeof payload === 'function') {
+      if (typeof payload === "function") {
         // Updater function
         if (__DEV__) {
           enterDisallowedContextReadInDEV();
@@ -489,9 +495,8 @@ export function processUpdateQueue<State>(
   workInProgress: Fiber,
   props: any,
   instance: any,
-  renderLanes: Lanes,
+  renderLanes: Lanes
 ): void {
-
   // 准备阶段----------------------------------------
   // 从workInProgress节点上取出updateQueue
   // 以下代码中的queue就是updateQueue
@@ -528,7 +533,6 @@ export function processUpdateQueue<State>(
     }
     // 修改遗留队列的尾部为新队列的尾部
     lastBaseUpdate = lastPendingUpdate;
-
 
     // 用同样的方式更新current上的firstBaseUpdate 和
     // lastBaseUpdate（baseUpdate队列）。
@@ -610,17 +614,22 @@ export function processUpdateQueue<State>(
           newLastBaseUpdate = newLastBaseUpdate.next = clone;
         }
         /*
-        *
-        * newLanes会在最后被赋值到workInProgress.lanes上，而它又最终
-        * 会被收集到root.pendingLanes。
-        *
-        * 再次更新时会从root上的pendingLanes中找出应该在本次中更新的优先
-        * 级（renderLanes），renderLanes含有本次跳过的优先级，再次进入，
-        * processUpdateQueue wip的优先级符合要求，被更新掉。
-        * */
+         *
+         * newLanes会在最后被赋值到workInProgress.lanes上，而它又最终
+         * 会被收集到root.pendingLanes。
+         *
+         * 再次更新时会从root上的pendingLanes中找出应该在本次中更新的优先
+         * 级（renderLanes），renderLanes含有本次跳过的优先级，再次进入，
+         * processUpdateQueue wip的优先级符合要求，被更新掉。
+         * */
         // 低优先级任务因此被重做
         newLanes = mergeLanes(newLanes, updateLane);
-        console.log('被跳过的WIP节点上边的优先级：', updateLane, '此时的渲染优先级：', renderLanes);
+        console.log(
+          "被跳过的WIP节点上边的优先级：",
+          updateLane,
+          "此时的渲染优先级：",
+          renderLanes
+        );
       } else {
         if (newLastBaseUpdate !== null) {
           // 进到这个判断说明现在处理的这个update在优先级不足的update之后，
@@ -650,7 +659,7 @@ export function processUpdateQueue<State>(
           update,
           newState,
           props,
-          instance,
+          instance
         );
         const callback = update.callback;
         // 这里的callback是setState的第二个参数，属于副作用，会被放入queue的副作用队列里
@@ -676,7 +685,8 @@ export function processUpdateQueue<State>(
         } else {
           // 如果此时又有了新的update进来，那么将它接入到之前合并好的队列中
           const lastPendingUpdate = pendingQueue;
-          const firstPendingUpdate = ((lastPendingUpdate.next: any): Update<State>);
+          const firstPendingUpdate =
+            ((lastPendingUpdate.next: any): Update<State>);
           lastPendingUpdate.next = null;
           update = firstPendingUpdate;
           queue.lastBaseUpdate = lastPendingUpdate;
@@ -706,10 +716,10 @@ export function processUpdateQueue<State>(
 
 function callCallback(callback, context) {
   invariant(
-    typeof callback === 'function',
-    'Invalid argument passed as callback. Expected a function. Instead ' +
-      'received: %s',
-    callback,
+    typeof callback === "function",
+    "Invalid argument passed as callback. Expected a function. Instead " +
+      "received: %s",
+    callback
   );
   callback.call(context);
 }
@@ -722,10 +732,11 @@ export function checkHasForceUpdateAfterProcessing(): boolean {
   return hasForceUpdate;
 }
 
+// Execute the callback function after rendering
 export function commitUpdateQueue<State>(
   finishedWork: Fiber,
   finishedQueue: UpdateQueue<State>,
-  instance: any,
+  instance: any
 ): void {
   // Commit the effects
   const effects = finishedQueue.effects;

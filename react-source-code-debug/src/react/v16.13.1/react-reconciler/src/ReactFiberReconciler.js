@@ -7,7 +7,7 @@
  * @flow
  */
 
-import {enableNewReconciler} from 'shared/ReactFeatureFlags';
+import { enableNewReconciler } from "shared/ReactFeatureFlags";
 
 // The entry file imports either the old or new version of the reconciler.
 // During build and testing, this indirection is always shimmed with the actual
@@ -50,7 +50,7 @@ import {
   focusWithin as focusWithin_old,
   observeVisibleRects as observeVisibleRects_old,
   registerMutableSourceForHydration as registerMutableSourceForHydration_old,
-} from './ReactFiberReconciler.old';
+} from "./ReactFiberReconciler.old";
 
 import {
   createContainer as createContainer_new,
@@ -88,7 +88,7 @@ import {
   focusWithin as focusWithin_new,
   observeVisibleRects as observeVisibleRects_new,
   registerMutableSourceForHydration as registerMutableSourceForHydration_new,
-} from './ReactFiberReconciler.new';
+} from "./ReactFiberReconciler.new";
 
 export const createContainer = enableNewReconciler
   ? createContainer_new
