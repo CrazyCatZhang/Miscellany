@@ -22,4 +22,4 @@ npm run dev:<version>
 
 ### React 16.x
 
-[Source Code Analysis]("/react-source-code-debug/docs/sourcecode/React-16.x.md")
+[Source Code Analysis](./docs/sourcecode/React-16.x.md)
